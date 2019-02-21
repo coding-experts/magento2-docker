@@ -54,13 +54,6 @@ RUN set -xe \
     && docker-php-ext-enable opcache \
     && cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini \
     \
-# Install blackfire: https://blackfire.io/docs/integrations/docker
-    && version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
-    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
-    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp \
-    && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
-    && rm -f /tmp/blackfire-probe.tar.gz \
-    \
 # Install igbinary (for more efficient serialization in redis/memcached)
     && for i in $(seq 1 3); do pecl install -o igbinary && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && docker-php-ext-enable igbinary \
@@ -96,8 +89,6 @@ RUN echo "UTC" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzd
 
 # Set pid file to be able to restart php-fpm
 RUN sed -i "s@^\[global\]@\[global\]\n\npid = /run/php-fpm.pid@" ${PHP_INI_DIR}-fpm.conf
-
-# COPY conf.d/blackfire.ini ${PHP_INI_DIR}/conf.d/blackfire.ini
 
 # Create Composer directory (cache and auth files) & Get Composer
 RUN mkdir -p $COMPOSER_HOME \
