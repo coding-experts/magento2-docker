@@ -97,11 +97,36 @@ RUN echo "UTC" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzd
 # Set pid file to be able to restart php-fpm
 RUN sed -i "s@^\[global\]@\[global\]\n\npid = /run/php-fpm.pid@" ${PHP_INI_DIR}-fpm.conf
 
-COPY conf.d/blackfire.ini ${PHP_INI_DIR}/conf.d/blackfire.ini
+# COPY conf.d/blackfire.ini ${PHP_INI_DIR}/conf.d/blackfire.ini
 
 # Create Composer directory (cache and auth files) & Get Composer
 RUN mkdir -p $COMPOSER_HOME \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install phpunit and put binary into $PATH
+RUN curl -sSLo phpunit.phar https://phar.phpunit.de/phpunit.phar \
+    && chmod 755 phpunit.phar \
+    && mv phpunit.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpunit.phar /usr/local/bin/phpunit
+
+# Install PHP Code sniffer
+RUN curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar \
+    && chmod 755 phpcs.phar \
+    && mv phpcs.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpcs.phar /usr/local/bin/phpcs \
+    && curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar \
+    && chmod 755 phpcbf.phar \
+    && mv phpcbf.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpcbf.phar /usr/local/bin/phpcbf
+
+# Install PHP Deployer
+RUN curl -LO https://deployer.org/deployer.phar \
+    && mv deployer.phar /usr/local/bin/dep \
+    && chmod +x /usr/local/bin/dep
+
+# Install security checker
+RUN php -r "readfile('http://get.sensiolabs.org/security-checker.phar');" > /usr/local/bin/security-checker \
+    && chmod +x /usr/local/bin/security-checker
 
 # As application is put in as volume we do all needed operation on run
 COPY scripts /scripts
