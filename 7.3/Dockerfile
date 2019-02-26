@@ -13,9 +13,11 @@ ENV COMPOSER_HOME=/root/.composer
 RUN apt-get update -q -y \
     && apt-get install -q -y --no-install-recommends \
         ca-certificates \
+        bash \
         curl \
         acl \
         sudo \
+        mysql-client \
 # Needed for the php extensions we enable below
         libxml2 \
         libfreetype6 \
@@ -30,6 +32,7 @@ RUN apt-get update -q -y \
         imagemagick \
 # git & unzip needed for composer, unless we document to use dev image for composer install
 # unzip needed due to https://github.com/composer/composer/issues/4471
+        zip \
         unzip \
         git \
     && rm -rf /var/lib/apt/lists/*
