@@ -29,6 +29,8 @@ RUN apt-get update -q -y \
         libmemcachedutil2 \
 # Required by eZ Commerce
         imagemagick \
+# Python
+	python3 \
 # git & unneeded for composer, unless we document to use dev image for composer install
 # unzip needed due to https://github.com/composer/composer/issues/4471
 	zip \
