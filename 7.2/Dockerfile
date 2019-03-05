@@ -14,6 +14,7 @@ RUN apt-get update -q -y \
     && apt-get install -q -y --no-install-recommends \
         ca-certificates \
 	bash \
+	procps \
         curl \
         acl \
         sudo \
