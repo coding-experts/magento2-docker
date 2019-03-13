@@ -45,6 +45,7 @@ RUN set -xe \
         $PHP_EXTRA_BUILD_DEPS \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
+        libmcrypt4 \
         libxpm-dev \
         libpng-dev \
         libicu-dev \
