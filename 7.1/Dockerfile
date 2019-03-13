@@ -101,6 +101,18 @@ RUN sed -i "s@^\[global\]@\[global\]\n\npid = /run/php-fpm.pid@" ${PHP_INI_DIR}-
 RUN mkdir -p $COMPOSER_HOME \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Install phpmd and put binary into $PATH
+RUN curl -sSLo phpmd.phar http://static.phpmd.org/php/latest/phpmd.phar \
+    && chmod 755 phpmd.phar \
+    && mv phpmd.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpmd.phar /usr/local/bin/phpmd
+
+# Install phpcpd and put binary into $PATH
+RUN curl -sSLo phpcpd.phar https://phar.phpunit.de/phpcpd.phar \
+    && chmod 755 phpcpd.phar \
+    && mv phpcpd.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpcpd.phar /usr/local/bin/phpcpd
+
 # Install phpunit and put binary into $PATH
 RUN curl -sSLo phpunit.phar https://phar.phpunit.de/phpunit-6.5.9.phar \
     && chmod 755 phpunit.phar \
