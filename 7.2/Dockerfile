@@ -18,7 +18,8 @@ RUN apt-get update -q -y \
         curl \
         acl \
         sudo \
-	mysql-client \
+	    mysql-client \
+        openssh-client \
 # Needed for the php extensions we enable below
         libxml2 \
         libfreetype6 \
@@ -31,7 +32,8 @@ RUN apt-get update -q -y \
 # Required by eZ Commerce
         imagemagick \
 # Python
-	python3 \
+        python3 \
+        python3-pip \
 # git & unneeded for composer, unless we document to use dev image for composer install
 # unzip needed due to https://github.com/composer/composer/issues/4471
 	zip \
@@ -57,8 +59,7 @@ RUN set -xe \
     && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ --with-xpm-dir=/usr/include/ --enable-gd-jis-conv \
-    && docker-php-ext-install exif gd bcmath mbstring intl xsl zip mysqli pdo_mysql xml soap sockets xdebug \
-    && docker-php-ext-enable opcache \
+    && docker-php-ext-install exif gd bcmath mbstring intl xsl zip mysqli pdo_mysql xml soap sockets \
     && cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini \
     \
 # Install igbinary (for more efficient serialization in redis/memcached)
@@ -73,6 +74,16 @@ RUN set -xe \
     && make \
     && make install \
     && docker-php-ext-enable redis \
+    && cd - \
+    \
+# Install xdebug (manualy build in order to be able to enable igbinary)
+    && for i in $(seq 1 3); do pecl install -o --nobuild xdebug && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+    && cd "$(pecl config-get temp_dir)/xdebug" \
+    && phpize \
+    && ./configure --enable-xdebug-igbinary \
+    && make \
+    && make install \
+    && docker-php-ext-enable xdebug \
     && cd - \
     \
 # Install memcached (manualy build in order to be able to enable igbinary)
