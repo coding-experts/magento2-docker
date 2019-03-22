@@ -57,7 +57,7 @@ RUN set -xe \
     && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ --with-xpm-dir=/usr/include/ --enable-gd-jis-conv \
-    && docker-php-ext-install exif gd bcmath mbstring intl xsl zip mysqli pdo_mysql xml soap sockets \
+    && docker-php-ext-install exif gd bcmath mbstring intl xsl zip mysqli pdo_mysql xml soap sockets xdebug \
     && docker-php-ext-enable opcache \
     && cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini \
     \
